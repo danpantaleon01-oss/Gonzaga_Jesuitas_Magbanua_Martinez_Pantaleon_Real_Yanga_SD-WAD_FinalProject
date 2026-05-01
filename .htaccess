@@ -1,0 +1,44 @@
+# Security Headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Prevent directory browsing
+Options -Indexes
+
+# Default index files
+DirectoryIndex index.php index.html
+
+# Enable mod_rewrite
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /SDWADPROJECT/
+
+    # Prevent access to config files
+    RewriteRule ^config/ - [F,L]
+
+    # Prevent access to includes directory
+    RewriteRule ^includes/ - [F,L]
+
+    # Prevent direct access to .sql files
+    RewriteRule \.sql$ - [F,L]
+</IfModule>
+
+# Prevent access to sensitive files
+<FilesMatch "\.(sql|md|log|ini|sh)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Set default charset
+AddDefaultCharset UTF-8
+
+# PHP settings
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value upload_max_filesize 10M
+    php_value post_max_size 10M
+</IfModule>
